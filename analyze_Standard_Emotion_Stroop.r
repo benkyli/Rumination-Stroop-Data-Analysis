@@ -348,3 +348,6 @@ for( i in 1:length(d[,1])){
 
 ## the variables outputMean2, outputMedian2 etc now contain averages for all participants
 ## you can write these to csv if needed with write.csv(outputMean2,"file.csv",row.names=F)
+
+## Added csv file creation for SD
+write.csv(outputSD2, "Standard_Emotion_Stroop.sd.csv", row.names = F)
