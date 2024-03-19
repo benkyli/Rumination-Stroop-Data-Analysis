@@ -1,0 +1,34 @@
+version: 3.4.6
+server-time: 2024-03-14-21-54
+client-time: 2024-02-14-17-54
+cgi: PROLIFIC_PID 
+cgi: STUDY_ID 
+cgi: SESSION_ID 
+user_agent: mozilla/5.0 (windows nt 10.0; win64; x64) applewebkit/537.36 (khtml, like gecko) chrome/122.0.0.0 safari/537.36
+screen_width: 1080
+screen_height: 1920
+html_width: 1063
+html_height: 2328
+user_time: 2024-02-14-17-54
+T: 0
+l: psy_group
+stime: 2024-03-14-21-54
+t: set
+a: 2
+l: sex
+stime: 2024-03-14-21-54
+T: 2
+t: radio
+a: 
+l: sex
+stime: 2024-03-14-21-54
+T: 2
+t: radio
+a: 
+l: age
+stime: 2024-03-14-21-54
+T: 2
+t: textline
+a: 
+endcode: 
+end 2024-03-14-21-54

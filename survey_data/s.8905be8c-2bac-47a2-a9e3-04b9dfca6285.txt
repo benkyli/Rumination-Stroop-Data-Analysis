@@ -1,0 +1,17 @@
+version: 3.4.6
+server-time: 2024-03-13-23-00
+client-time: 2024-02-13-19-00
+cgi: PROLIFIC_PID 
+cgi: STUDY_ID 
+cgi: SESSION_ID 
+user_agent: mozilla/5.0 (macintosh; intel mac os x 10_15_7) applewebkit/537.36 (khtml, like gecko) chrome/121.0.0.0 safari/537.36
+screen_width: 1512
+screen_height: 982
+html_width: 1372
+html_height: 2955
+user_time: 2024-02-13-19-00
+T: 0
+l: psy_group
+stime: 2024-03-13-23-00
+t: set
+a: 1

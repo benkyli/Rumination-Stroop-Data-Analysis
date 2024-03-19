@@ -1,0 +1,60 @@
+Condition: congruent 
+-------------------------------------------
+Total trials  : 99 trials.
+Total correct : 12 trials (errors excluded, for RT data below).
+Error count   : 87 
+Mean value    : 280.5833 
+Median value  : 96.5 
+Min value     : 32 
+Max value     : 1291 
+Error rate    : 87.87879 percent
+
+Standard deviation:  387.1954 
+Condition: incongruent 
+-------------------------------------------
+Total trials  : 93 trials.
+Total correct : 7 trials (errors excluded, for RT data below).
+Error count   : 86 
+Mean value    : 530.1429 
+Median value  : 113 
+Min value     : 47 
+Max value     : 1670 
+Error rate    : 92.47312 percent
+
+Standard deviation:  661.9004 
+Condition: negative 
+-------------------------------------------
+Total trials  : 64 trials.
+Total correct : 2 trials (errors excluded, for RT data below).
+Error count   : 62 
+Mean value    : 538.5 
+Median value  : 538.5 
+Min value     : 157 
+Max value     : 920 
+Error rate    : 96.875 percent
+
+Standard deviation:  539.5225 
+Condition: neutral 
+-------------------------------------------
+Total trials  : 64 trials.
+Total correct : 0 trials (errors excluded, for RT data below).
+Error count   : 64 
+Mean value    : NaN 
+Median value  : NA 
+Min value     : Inf 
+Max value     : -Inf 
+Error rate    : 100 percent
+
+Standard deviation:  NA 
+Condition: positive 
+-------------------------------------------
+Total trials  : 64 trials.
+Total correct : 4 trials (errors excluded, for RT data below).
+Error count   : 60 
+Mean value    : 242 
+Median value  : 232.5 
+Min value     : 87 
+Max value     : 416 
+Error rate    : 93.75 percent
+
+Standard deviation:  143.2504 
