@@ -68,20 +68,33 @@ standard_trait_mean = pd.DataFrame({'Conditions': standard_first_trait_high_mean
 standard_state_mean = pd.DataFrame({'Conditions': standard_first_state_high_mean.index, 'Low Rumination': standard_first_state_low_mean.values,'High Rumination': standard_first_state_high_mean.values})
 emotion_trait_mean = pd.DataFrame({'Conditions': emotion_first_trait_high_mean.index, 'Low Rumination': emotion_first_trait_low_mean.values,'High Rumination': emotion_first_trait_high_mean.values})
 emotion_state_mean = pd.DataFrame({'Conditions': emotion_first_state_high_mean.index, 'Low Rumination': emotion_first_state_low_mean.values,'High Rumination': emotion_first_state_high_mean.values})
+means = [standard_trait_mean, standard_state_mean, emotion_trait_mean, emotion_state_mean]
 
 standard_trait_sd = pd.concat([standard_first_trait_low_sd.rename('Low Rumination'), standard_first_trait_high_sd.rename('High Rumination')], axis=1)
 standard_state_sd = pd.concat([standard_first_state_low_sd.rename('Low Rumination'), standard_first_state_high_sd.rename('High Rumination')], axis=1)
 emotion_trait_sd =  pd.concat([emotion_first_trait_low_sd.rename('Low Rumination'), emotion_first_trait_high_sd.rename('High Rumination')], axis=1)
 emotion_state_sd =  pd.concat([emotion_first_state_low_sd.rename('Low Rumination'), emotion_first_state_high_sd.rename('High Rumination')], axis=1)
+sds = [standard_trait_sd, standard_state_sd, emotion_trait_sd, emotion_state_sd]
+
+block_labels = [['Standard', 'Trait'], ['Standard', 'State'], ['Emotional', 'Trait'], ['Emotional', 'State']]
 
 # Started with standard Stroop graph
-standard_trait_mean.plot(x='Conditions', y = ['Low Rumination', 'High Rumination'], kind = 'bar', yerr=standard_trait_sd)
+for block in range(len(means)):
+    mean = means[block]
+    sd = sds[block]
+    block_label = block_labels[block]
+    ax = mean.plot(x='Conditions', y = ['Low Rumination', 'High Rumination'], kind = 'bar', yerr=sd, rot = 0)
+    # add bar values
+    for p in ax.patches:
+        ax.annotate(str(int(p.get_height())), (p.get_x() * 1.005, p.get_height() * 1.005))
+    plt.ylabel('Reaction time (ms)')
+    plt.title(f'Reaction Times of {block_label[1]} Ruminators starting with {block_label[0]} Stroop')
+# standard_trait_mean.plot(x='Conditions', y = ['Low Rumination', 'High Rumination'], kind = 'bar', yerr=standard_trait_sd, rot = 0)
 
-standard_state_mean.plot(x='Conditions', y = ['Low Rumination', 'High Rumination'], kind = 'bar', yerr=standard_state_sd)
+# standard_state_mean.plot(x='Conditions', y = ['Low Rumination', 'High Rumination'], kind = 'bar', yerr=standard_state_sd, rot = 0)
+# emotion_trait_mean.plot(x='Conditions', y = ['Low Rumination', 'High Rumination'], kind = 'bar', yerr=emotion_trait_sd, rot = 0)
 
-emotion_trait_mean.plot(x='Conditions', y = ['Low Rumination', 'High Rumination'], kind = 'bar', yerr=emotion_trait_sd)
-
-emotion_state_mean.plot(x='Conditions', y = ['Low Rumination', 'High Rumination'], kind = 'bar', yerr=emotion_state_sd)
+# emotion_state_mean.plot(x='Conditions', y = ['Low Rumination', 'High Rumination'], kind = 'bar', yerr=emotion_state_sd, rot = 0)
 
 plt.show()
 
