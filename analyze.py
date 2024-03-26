@@ -34,9 +34,9 @@ standard_first_trait_high = standard_first.loc[standard_first['rrs_sums'] > stan
 standard_first_state_low = standard_first.loc[standard_first['bsri_sums'] < standard_first['bsri_sums'].median()].index
 standard_first_state_high = standard_first.loc[standard_first['bsri_sums'] > standard_first['bsri_sums'].median()].index
 
-emotion_first_trait_low =  emotion_first.loc[emotion_first['rrs_sums'] <  emotion_first['rrs_sums'].median()].index
+emotion_first_trait_low =  emotion_first.loc[emotion_first['rrs_sums'] <=  emotion_first['rrs_sums'].median()].index
 emotion_first_trait_high = emotion_first.loc[emotion_first['rrs_sums'] >  emotion_first['rrs_sums'].median()].index
-emotion_first_state_low =  emotion_first.loc[emotion_first['bsri_sums'] < emotion_first['bsri_sums'].median()].index
+emotion_first_state_low =  emotion_first.loc[emotion_first['bsri_sums'] <= emotion_first['bsri_sums'].median()].index
 emotion_first_state_high = emotion_first.loc[emotion_first['bsri_sums'] > emotion_first['bsri_sums'].median()].index
 
 # How do I deal with uneven groups...
@@ -51,8 +51,6 @@ emotion_first_trait_low_mean  = emotion_means.iloc[emotion_first_trait_low].mean
 emotion_first_trait_high_mean = emotion_means.iloc[emotion_first_trait_high].mean()
 emotion_first_state_low_mean  = emotion_means.iloc[emotion_first_state_low].mean()
 emotion_first_state_high_mean = emotion_means.iloc[emotion_first_state_high].mean()
-print(len(emotion_first_trait_low))
-print(len(emotion_first_trait_high))
 
 # sds for each condition in each block group
 standard_first_trait_low_sd = standard_means.iloc[standard_first_trait_low].std()
