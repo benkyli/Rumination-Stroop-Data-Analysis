@@ -39,8 +39,6 @@ emotion_first_trait_high = emotion_first.loc[emotion_first['rrs_sums'] >  emotio
 emotion_first_state_low =  emotion_first.loc[emotion_first['bsri_sums'] <= emotion_first['bsri_sums'].median()].index
 emotion_first_state_high = emotion_first.loc[emotion_first['bsri_sums'] > emotion_first['bsri_sums'].median()].index
 
-# How do I deal with uneven groups...
-
 # means for each each condition in each block group
 standard_first_trait_low_mean  = standard_means.iloc[standard_first_trait_low].mean()
 standard_first_trait_high_mean = standard_means.iloc[standard_first_trait_high].mean()
@@ -53,15 +51,15 @@ emotion_first_state_low_mean  = emotion_means.iloc[emotion_first_state_low].mean
 emotion_first_state_high_mean = emotion_means.iloc[emotion_first_state_high].mean()
 
 # sds for each condition in each block group
-standard_first_trait_low_sd = standard_means.iloc[standard_first_trait_low].std()
-standard_first_trait_high_sd = standard_means.iloc[standard_first_trait_high].std()
-standard_first_state_low_sd = standard_means.iloc[standard_first_state_low].std()
-standard_first_state_high_sd = standard_means.iloc[standard_first_state_high].std()
+standard_first_trait_low_sd = standard_means.iloc[standard_first_trait_low].sem()
+standard_first_trait_high_sd = standard_means.iloc[standard_first_trait_high].sem()
+standard_first_state_low_sd = standard_means.iloc[standard_first_state_low].sem()
+standard_first_state_high_sd = standard_means.iloc[standard_first_state_high].sem()
 
-emotion_first_trait_low_sd =  emotion_means.iloc[emotion_first_trait_low].std()
-emotion_first_trait_high_sd = emotion_means.iloc[emotion_first_trait_high].std()
-emotion_first_state_low_sd =  emotion_means.iloc[emotion_first_state_low].std()
-emotion_first_state_high_sd = emotion_means.iloc[emotion_first_state_high].std()
+emotion_first_trait_low_sd =  emotion_means.iloc[emotion_first_trait_low].sem()
+emotion_first_trait_high_sd = emotion_means.iloc[emotion_first_trait_high].sem()
+emotion_first_state_low_sd =  emotion_means.iloc[emotion_first_state_low].sem()
+emotion_first_state_high_sd = emotion_means.iloc[emotion_first_state_high].sem()
 
 # Convert means and sds into dataframes... surely there's a better way to do this
 standard_trait_mean = pd.DataFrame({'Conditions': standard_first_trait_high_mean.index, 'Low Rumination': standard_first_trait_low_mean.values,'High Rumination': standard_first_trait_high_mean.values})
@@ -76,25 +74,20 @@ emotion_trait_sd =  pd.concat([emotion_first_trait_low_sd.rename('Low Rumination
 emotion_state_sd =  pd.concat([emotion_first_state_low_sd.rename('Low Rumination'), emotion_first_state_high_sd.rename('High Rumination')], axis=1)
 sds = [standard_trait_sd, standard_state_sd, emotion_trait_sd, emotion_state_sd]
 
-block_labels = [['Standard', 'Trait'], ['Standard', 'State'], ['Emotional', 'Trait'], ['Emotional', 'State']]
+block_labels = [['Standard', 'RRS'], ['Standard', 'BSRI'], ['Emotional', 'RRS'], ['Emotional', 'BSRI']]
 
 # Started with standard Stroop graph
 for block in range(len(means)):
     mean = means[block]
     sd = sds[block]
     block_label = block_labels[block]
-    ax = mean.plot(x='Conditions', y = ['Low Rumination', 'High Rumination'], kind = 'bar', yerr=sd, rot = 0)
+    ax = mean.plot(x='Conditions', y = ['Low Rumination', 'High Rumination'], kind = 'bar', yerr=sd, rot = 0, color=['cornflowerblue', 'maroon'], width=0.65)
+    plt.ylim(bottom=500) # limit y-min to see differences better
     # add bar values
-    for p in ax.patches:
-        ax.annotate(str(int(p.get_height())), (p.get_x() * 1.005, p.get_height() * 1.005))
+    for i, p in enumerate(ax.patches):
+        ax.annotate(str(int(p.get_height())), (p.get_x() * 1.005, p.get_height() + 43))
     plt.ylabel('Reaction time (ms)')
-    plt.title(f'Reaction Times of {block_label[1]} Ruminators starting with {block_label[0]} Stroop')
-# standard_trait_mean.plot(x='Conditions', y = ['Low Rumination', 'High Rumination'], kind = 'bar', yerr=standard_trait_sd, rot = 0)
-
-# standard_state_mean.plot(x='Conditions', y = ['Low Rumination', 'High Rumination'], kind = 'bar', yerr=standard_state_sd, rot = 0)
-# emotion_trait_mean.plot(x='Conditions', y = ['Low Rumination', 'High Rumination'], kind = 'bar', yerr=emotion_trait_sd, rot = 0)
-
-# emotion_state_mean.plot(x='Conditions', y = ['Low Rumination', 'High Rumination'], kind = 'bar', yerr=emotion_state_sd, rot = 0)
+    plt.title(f'Reaction Times Starting with {block_label[0]} Stroop ({block_label[1]} groups)')
 
 plt.show()
 
