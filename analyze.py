@@ -6,6 +6,7 @@ import numpy as np
 # NOTE: may need to remove participant 1, 7, and 46
 
 df = pd.read_csv('data.csv') # used for getting rrs and bsri scores
+print(df['age_1'].mean()) # mean age of all participants
 
 standard_means = pd.read_csv('Standard_Emotion_Stroop.mean.csv') # means csv for each block and participants with all conditions. 
 emotion_means = pd.read_csv("Emotion_Standard_Stroop.mean.csv")
@@ -29,15 +30,16 @@ emotion_first = df.loc[df['psy_group'] == 2]
              
 
     # standard first and emotion first indices
-standard_first_trait_low = standard_first.loc[standard_first['rrs_sums'] < standard_first['rrs_sums'].median()].index
-standard_first_trait_high = standard_first.loc[standard_first['rrs_sums'] > standard_first['rrs_sums'].median()].index
+        # NOTE: had to include > 0  condition because of empty RRS of participant 1 (index = 0)
+standard_first_trait_low = standard_first.loc[(standard_first['rrs_sums'] < standard_first['rrs_sums'].median()) & (standard_first['rrs_sums'] > 0)].index
+standard_first_trait_high = standard_first.loc[(standard_first['rrs_sums'] > standard_first['rrs_sums'].median()) & (standard_first['rrs_sums'] > 0)].index
 standard_first_state_low = standard_first.loc[standard_first['bsri_sums'] < standard_first['bsri_sums'].median()].index
 standard_first_state_high = standard_first.loc[standard_first['bsri_sums'] > standard_first['bsri_sums'].median()].index
 
-emotion_first_trait_low =  emotion_first.loc[emotion_first['rrs_sums'] <=  emotion_first['rrs_sums'].median()].index
-emotion_first_trait_high = emotion_first.loc[emotion_first['rrs_sums'] >  emotion_first['rrs_sums'].median()].index
-emotion_first_state_low =  emotion_first.loc[emotion_first['bsri_sums'] <= emotion_first['bsri_sums'].median()].index
-emotion_first_state_high = emotion_first.loc[emotion_first['bsri_sums'] > emotion_first['bsri_sums'].median()].index
+emotion_first_trait_low =  emotion_first.loc[emotion_first['rrs_sums'] <  emotion_first['rrs_sums'].median()].index
+emotion_first_trait_high = emotion_first.loc[emotion_first['rrs_sums'] >=  emotion_first['rrs_sums'].median()].index
+emotion_first_state_low =  emotion_first.loc[emotion_first['bsri_sums'] < emotion_first['bsri_sums'].median()].index
+emotion_first_state_high = emotion_first.loc[emotion_first['bsri_sums'] >= emotion_first['bsri_sums'].median()].index
 
 # means for each each condition in each block group
 standard_first_trait_low_mean  = standard_means.iloc[standard_first_trait_low].mean()
@@ -89,7 +91,7 @@ for block in range(len(means)):
     plt.ylabel('Reaction time (ms)')
     plt.title(f'Reaction Times Starting with {block_label[0]} Stroop ({block_label[1]} groups)')
 
-plt.show()
+# plt.show()
 
 ###############################################################################################################
 # Checking other factors
@@ -101,12 +103,12 @@ plt.show()
 # print(df.iloc[emotion_first_trait_high]['age_1'].mean())
 
 # checking gender distribution of each rumination group; NOTE: might need these values later, distribution is male skewed.
-standard_first_trait_low_sex = df.iloc[standard_first_trait_low]['sex_1'];   #   print(f'total = {len(standard_first_trait_low)}'," Males: ", (standard_first_trait_low_sex == 1).sum(), 'Females: ',(standard_first_trait_low_sex == 2).sum())   
-standard_first_trait_high_sex = df.iloc[standard_first_trait_high]['sex_1']; #   print(f'total = {len(standard_first_trait_high)}', " Males: ", (standard_first_trait_high_sex == 1).sum(), 'Females: ',(standard_first_trait_high_sex == 2).sum()) 
-standard_first_state_low_sex = df.iloc[standard_first_state_low]['sex_1'];   #   print(f'total = {len(standard_first_state_low)}', " Males: ", (standard_first_state_low_sex == 1).sum(), 'Females: ',(standard_first_state_low_sex == 2).sum()) 
-standard_first_state_high_sex = df.iloc[standard_first_state_high]['sex_1']; #   print(f'total = {len(standard_first_state_high)}', " Males: ", (standard_first_state_high_sex == 1).sum(), 'Females: ',(standard_first_state_high_sex == 2).sum()) 
+standard_first_trait_low_sex = df.iloc[standard_first_trait_low]['sex_1'];    #  print(f'total = {len(standard_first_trait_low)}'," Males: ", (standard_first_trait_low_sex == 1).sum(), 'Females: ',(standard_first_trait_low_sex == 2).sum())   
+standard_first_trait_high_sex = df.iloc[standard_first_trait_high]['sex_1'];  #  print(f'total = {len(standard_first_trait_high)}', " Males: ", (standard_first_trait_high_sex == 1).sum(), 'Females: ',(standard_first_trait_high_sex == 2).sum()) 
+standard_first_state_low_sex = df.iloc[standard_first_state_low]['sex_1'];    #  print(f'total = {len(standard_first_state_low)}', " Males: ", (standard_first_state_low_sex == 1).sum(), 'Females: ',(standard_first_state_low_sex == 2).sum()) 
+standard_first_state_high_sex = df.iloc[standard_first_state_high]['sex_1'];  #  print(f'total = {len(standard_first_state_high)}', " Males: ", (standard_first_state_high_sex == 1).sum(), 'Females: ',(standard_first_state_high_sex == 2).sum()) 
 #
-emotion_first_trait_low_sex = df.iloc[ emotion_first_trait_low]['sex_1'];    #  print(f'total = {len(emotion_first_trait_low)}'," Males: ", (  emotion_first_trait_low_sex == 1).sum(), 'Females: ',(emotion_first_trait_low_sex == 2).sum())  
-emotion_first_trait_high_sex = df.iloc[emotion_first_trait_high]['sex_1'];   # print(f'total = {len( emotion_first_trait_high)}', " Males: ", (emotion_first_trait_high_sex == 1).sum(), 'Females: ',(emotion_first_trait_high_sex == 2).sum()) 
-emotion_first_state_low_sex = df.iloc[ emotion_first_state_low]['sex_1'];    #  print(f'total = {len(emotion_first_state_low)}', " Males: ", ( emotion_first_state_low_sex == 1).sum(), 'Females: ',(emotion_first_state_low_sex == 2).sum()) 
-emotion_first_state_high_sex = df.iloc[emotion_first_state_high]['sex_1'];   # print(f'total = {len( emotion_first_state_high)}', " Males: ", (emotion_first_state_high_sex == 1).sum(), 'Females: ',(emotion_first_state_high_sex == 2).sum()) 
+emotion_first_trait_low_sex = df.iloc[ emotion_first_trait_low]['sex_1'];     # print(f'total = {len(emotion_first_trait_low)}'," Males: ", (  emotion_first_trait_low_sex == 1).sum(), 'Females: ',(emotion_first_trait_low_sex == 2).sum())  
+emotion_first_trait_high_sex = df.iloc[emotion_first_trait_high]['sex_1'];    #print(f'total = {len( emotion_first_trait_high)}', " Males: ", (emotion_first_trait_high_sex == 1).sum(), 'Females: ',(emotion_first_trait_high_sex == 2).sum()) 
+emotion_first_state_low_sex = df.iloc[ emotion_first_state_low]['sex_1'];     # print(f'total = {len(emotion_first_state_low)}', " Males: ", ( emotion_first_state_low_sex == 1).sum(), 'Females: ',(emotion_first_state_low_sex == 2).sum()) 
+emotion_first_state_high_sex = df.iloc[emotion_first_state_high]['sex_1'];    #print(f'total = {len( emotion_first_state_high)}', " Males: ", (emotion_first_state_high_sex == 1).sum(), 'Females: ',(emotion_first_state_high_sex == 2).sum()) 
