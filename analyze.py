@@ -1,15 +1,14 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np 
 
 # Set up data frames
 # NOTE: may need to remove participant 1, 7, and 46
 
 df = pd.read_csv('data.csv') # used for getting rrs and bsri scores
-print(df['age_1'].mean()) # mean age of all participants
+# print(df['age_1'].mean()) # mean age of all participants
 
 standard_means = pd.read_csv('Standard_Emotion_Stroop.mean.csv') # means csv for each block and participants with all conditions. 
-emotion_means = pd.read_csv("Emotion_Standard_Stroop.mean.csv")
+emotion_means = pd.read_csv('Emotion_Standard_Stroop.mean.csv')
 
 # Create arrays containing labels of rrs and bsri columns
 rrs_cols = [f'rumination_{i}' for i in range(1, 23)] # get the columns names of the RRS
@@ -28,7 +27,6 @@ emotion_first = df.loc[df['psy_group'] == 2]
 # Separate groups into high and low ruminators by finding medians. Then get row indices for the groups
 # NOTE: this gets row indices, not the actual rows. Remove the .index to see row values.
              
-
     # standard first and emotion first indices
         # NOTE: had to include > 0  condition because of empty RRS of participant 1 (index = 0)
 standard_first_trait_low = standard_first.loc[(standard_first['rrs_sums'] < standard_first['rrs_sums'].median()) & (standard_first['rrs_sums'] > 0)].index
@@ -91,6 +89,7 @@ for block in range(len(means)):
     plt.ylabel('Reaction time (ms)')
     plt.title(f'Reaction Times Starting with {block_label[0]} Stroop ({block_label[1]} groups)')
 
+# Uncomment this line to show graphs
 # plt.show()
 
 ###############################################################################################################
@@ -112,3 +111,81 @@ emotion_first_trait_low_sex = df.iloc[ emotion_first_trait_low]['sex_1'];     # 
 emotion_first_trait_high_sex = df.iloc[emotion_first_trait_high]['sex_1'];    #print(f'total = {len( emotion_first_trait_high)}', " Males: ", (emotion_first_trait_high_sex == 1).sum(), 'Females: ',(emotion_first_trait_high_sex == 2).sum()) 
 emotion_first_state_low_sex = df.iloc[ emotion_first_state_low]['sex_1'];     # print(f'total = {len(emotion_first_state_low)}', " Males: ", ( emotion_first_state_low_sex == 1).sum(), 'Females: ',(emotion_first_state_low_sex == 2).sum()) 
 emotion_first_state_high_sex = df.iloc[emotion_first_state_high]['sex_1'];    #print(f'total = {len( emotion_first_state_high)}', " Males: ", (emotion_first_state_high_sex == 1).sum(), 'Females: ',(emotion_first_state_high_sex == 2).sum()) 
+
+#################################################################################
+# Separating standard Stroop trial means and emotional Stroop trial means into separate CSVs for linear mixed models
+
+# NOTE: naming conventions before this block of code had "standard_[whatever]" and "emotion_[whatever]" refer to the BLOCK order of standard-first or emotion-first
+# use of "standard" and "emotion" from here on refer to the TRIAL type. So all standard trials go into standard_rows and all emotion trials go into emotion_rows
+standard_rows = []
+emotion_rows = []
+
+# Loop through each participant
+for index, row in df.iterrows():
+
+    psy_group = row['psy_group']
+    # exclude removed participants (removed participants have no psy_group value)
+    if pd.isnull(psy_group):
+        continue # go to next row
+
+    # get means and rumination groups based on counterbalancing group
+    # people in standard-first group
+    if psy_group == 1:
+        means = standard_means.iloc[index] # get means row using index
+        # get rrs group
+        if index in standard_first_trait_low:
+            rrs_group = 0
+        elif index in standard_first_trait_high:
+            rrs_group = 1
+        else:
+            # this else statement is included for the edge case of participant 1 who had no RRS data
+            # all other participants with a psy_group have both rrs and bsri data
+            rrs_group = 'NaN'
+
+        # get bsri group
+        if index in standard_first_state_low:
+            bsri_group = 0
+        else:
+            bsri_group = 1
+
+    # people in emotion_first group
+    else:
+        means = emotion_means.iloc[index]
+        # rrs group
+        if index in emotion_first_trait_low:
+            rrs_group = 0
+        else:
+            rrs_group = 1
+        # bsri group
+        if index in emotion_first_state_low:
+            bsri_group = 0
+        else:
+            bsri_group = 1
+        
+    # order of row values; these will be column names later:
+    # ['psytoolkit_ID', 'prolific_ID', 'counterbalancing_group', 'congruency', 'mean_RT', 'RRS_score', 'RRS_group', 'BSRI_score', 'BSRI_group']
+        # NOTE: conditions will be standard: [congruent = 0, incongruent = 1], emotion: [negative = 0, neutral = 1, positive = 2]
+    # Loop through congruency conditions to produce 2 rows per participant
+    congruencies = ['congruent', 'incongruent'] # these will be used as keys
+    for idx, congruency in enumerate(congruencies):
+        # NOTE: idx in this case will denote the congruency condition.
+        standard_row = [row['participant'], row['PROLIFIC_PID'], psy_group, idx, means[congruency], row['rrs_sums'], rrs_group, row['bsri_sums'], bsri_group]
+        standard_rows.append(standard_row)
+    # Loop through valence conditions; produces 3 rows per participant
+    valences = ['negative', 'neutral', 'positive']
+    for idx, valence in enumerate(valences):
+        emotion_row = [row['participant'], row['PROLIFIC_PID'], psy_group, idx, means[valence], row['rrs_sums'], rrs_group, row['bsri_sums'], bsri_group]
+        emotion_rows.append(emotion_row)
+
+# create dataframes for exporting to csv
+    # NOTE: technically, the standard and emotion trials could all be in 1 file if we assign the valences to 3, 4, 5 and make the column name 'condition'. 
+    # I'll keep it separated, for organization purposes 
+columns_standard = ['psytoolkit_ID', 'prolific_ID', 'counterbalancing_group', 'congruency', 'mean_RT', 'RRS_score', 'RRS_group', 'BSRI_score', 'BSRI_group']
+columns_emotion =  ['psytoolkit_ID', 'prolific_ID', 'counterbalancing_group', 'valence', 'mean_RT', 'RRS_score', 'RRS_group', 'BSRI_score', 'BSRI_group']
+
+df_standard_trials = pd.DataFrame(standard_rows, columns=columns_standard)
+df_emotion_trials = pd.DataFrame(emotion_rows, columns=columns_emotion)
+
+# Convert the dataframes into csv files; uncomment these if you want to create the files. 
+df_standard_trials.to_csv('stroop_standard_trials.csv', index=False)
+df_emotion_trials.to_csv('stroop_emotion_trials.csv', index=False)
