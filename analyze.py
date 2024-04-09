@@ -84,21 +84,21 @@ sds = [standard_trait_sd, standard_state_sd, emotion_trait_sd, emotion_state_sd]
 
 block_labels = [['Standard', 'RRS'], ['Standard', 'BSRI'], ['Emotional', 'RRS'], ['Emotional', 'BSRI']]
 
-# # Started with standard Stroop graph
-# for block in range(len(means)):
-#     mean = means[block]
-#     sd = sds[block]
-#     block_label = block_labels[block]
-#     ax = mean.plot(x='Conditions', y = ['Low Rumination', 'High Rumination'], kind = 'bar', yerr=sd, rot = 0, color=['cornflowerblue', 'maroon'], width=0.65)
-#     plt.ylim(bottom=500) # limit y-min to see differences better
-#     # add bar values
-#     for i, p in enumerate(ax.patches):
-#         ax.annotate(str(int(p.get_height())), (p.get_x() * 1.005, p.get_height() + 43))
-#     plt.ylabel('Reaction time (ms)')
-#     plt.title(f'Reaction Times Starting with {block_label[0]} Stroop ({block_label[1]} groups)')
+# Started with standard Stroop graph
+for block in range(len(means)):
+    mean = means[block]
+    sd = sds[block]
+    block_label = block_labels[block]
+    ax = mean.plot(x='Conditions', y = ['Low Rumination', 'High Rumination'], kind = 'bar', yerr=sd, rot = 0, color=['cornflowerblue', 'maroon'], width=0.65)
+    plt.ylim(bottom=500) # limit y-min to see differences better
+    # add bar values
+    for i, p in enumerate(ax.patches):
+        ax.annotate(str(int(p.get_height())), (p.get_x() * 1.005, p.get_height() + 43))
+    plt.ylabel('Reaction time (ms)')
+    plt.title(f'Reaction Times Starting with {block_label[0]} Stroop ({block_label[1]} groups)')
 
-# # Uncomment this line to show graphs
-# # plt.show()
+# Uncomment this line to show graphs
+plt.show()
 
 ###############################################################################################################
 # Checking other factors; age and sex
@@ -199,39 +199,64 @@ df_emotion_trials = pd.DataFrame(emotion_rows, columns=columns_emotion)
 # df_emotion_trials.to_csv('stroop_emotion_trials.csv', index=False)
 
 ######################################################################################
-# Create mean_rt based on group. Mean of all conditions together, not separate like before
-# order: trait low, trait high, state low, state high
-standard_means_labels = [standard_first_trait_low_mean, standard_first_trait_high_mean, standard_first_state_low_mean, standard_first_state_high_mean]
-emotion_means_labels = [emotion_first_trait_low_mean, emotion_first_trait_high_mean, emotion_first_state_low_mean, emotion_first_state_high_mean]   
-standard_group_means = [groupmean.mean() for groupmean in standard_means_labels]
-emotion_group_means = [groupmean.mean() for groupmean in emotion_means_labels]
+# Create mean rumination scores per counterbalancing group.
+# order = standard low, standard high, emotion low, emotion high
 
-# get sd
-standard_sd_labels = [standard_means.iloc[standard_first_trait_low].std(), standard_means.iloc[standard_first_trait_high].std(), standard_means.iloc[standard_first_state_low].std(), standard_means.iloc[standard_first_state_high].std()]
-emotion_sd_labels = [emotion_means.iloc[emotion_first_trait_low].std(), emotion_means.iloc[emotion_first_trait_high].std(), emotion_means.iloc[emotion_first_state_low].std(), emotion_means.iloc[emotion_first_state_high].std()]
-standard_group_stds = [groupstd.std() for groupstd in standard_sd_labels]
+# rrs groups
+rrs_group_labels = [standard_first_trait_low, standard_first_trait_high, emotion_first_trait_low, emotion_first_trait_high]
+rrs_group_means = [df.iloc[group]['rrs_sums'].mean() for group in rrs_group_labels]
+rrs_group_stds = [df.iloc[group]['rrs_sums'].std() for group in rrs_group_labels]
+# bsri groups
+bsri_group_labels = [standard_first_state_low, standard_first_state_high, emotion_first_state_low, emotion_first_state_high]
+bsri_group_means = [df.iloc[group]['bsri_sums'].mean() for group in bsri_group_labels]
+bsri_group_stds = [df.iloc[group]['bsri_sums'].std() for group in bsri_group_labels]
 
-print(standard_group_stds)
+# create data frame from data above to plot rrs groups
+rrs_df = pd.DataFrame()
+rrs_df['Rumination Level'] = ['Low', 'High']
+rrs_df['standard_first_rrs'] = [rrs_group_means[0], rrs_group_means[1]] 
+rrs_df['emotion_first_rrs'] =  [rrs_group_means[2], rrs_group_means[3]]
+rrs_df['standard_first_std'] = [rrs_group_stds[0], rrs_group_stds[1]]
+rrs_df['emotion_first_std'] =  [rrs_group_stds[2], rrs_group_stds[3]]
 
-xlabels = ["Low", "High"]
+ax = rrs_df.plot.bar(x='Rumination Level',
+                     y= ['standard_first_rrs', 'emotion_first_rrs'],
+                     yerr=rrs_df[['standard_first_std', 'emotion_first_std']].T.values,
+                     rot = 0,
+                     color=['cornflowerblue', 'maroon'], 
+                     width=0.65
+                     )
 
-low_trait = [standard_group_means[0], emotion_group_means[0]]
-high_trait = [standard_group_means[1], emotion_group_means[1]]
-low_state = [standard_group_means[2], emotion_group_means[2]]
-high_state = [standard_group_means[3], emotion_group_means[3]]
-
-x = np.arange(2) # positions for x ticks
-width = 0.27
-
-ax = plt.subplot()
-ax.bar(x, low_trait, width)
-ax.bar(x + width, high_trait, width)
-ax.set_ylabel("Mean reaction time (ms)")
-ax.set_xticks(x + width/2) # only have 2 labels
-ax.set_xticklabels(xlabels)
+for i, p in enumerate(ax.patches):
+    ax.annotate(f'{p.get_height():.2f}', (p.get_x() + 0.075, p.get_height()+ rrs_group_stds[i]+1))
+leg = ax.legend(loc='upper left')
+leg.get_texts()[0].set_text('Standard-first')
+leg.get_texts()[1].set_text('Emotion-first')
+plt.ylabel('RRS mean score')
+plt.title('Mean RRS Scores based on Rumination and Counterbalancing Group')
 plt.show()
 
+# create data frame from data above to plot bsri groups
+bsri_df = pd.DataFrame()
+bsri_df['Rumination Level'] = ['Low', 'High']
+bsri_df['standard_first_bsri'] = [bsri_group_means[0], bsri_group_means[1]] 
+bsri_df['emotion_first_bsri'] =  [bsri_group_means[2], bsri_group_means[3]]
+bsri_df['standard_first_std'] = [bsri_group_stds[0], bsri_group_stds[1]]
+bsri_df['emotion_first_std'] =  [bsri_group_stds[2], bsri_group_stds[3]]
 
+ax = bsri_df.plot.bar(x='Rumination Level',
+                     y= ['standard_first_bsri', 'emotion_first_bsri'],
+                     yerr=bsri_df[['standard_first_std', 'emotion_first_std']].T.values,
+                     rot = 0,
+                     color=['cornflowerblue', 'maroon'], 
+                     width=0.65
+                     )
 
-
-# standard_trait_low_rum_mean = standard_trait_mean['Low Rumination'].mean()
+for i, p in enumerate(ax.patches):
+    ax.annotate(f'{p.get_height():.2f}', (p.get_x() + 0.075, p.get_height()+ bsri_group_stds[i]+1))
+leg = ax.legend(loc='upper left')
+leg.get_texts()[0].set_text('Standard-first')
+leg.get_texts()[1].set_text('Emotion-first')
+plt.ylabel('BSRI mean score')
+plt.title('Mean BSRI Scores based on Rumination and Counterbalancing Group')
+plt.show()
