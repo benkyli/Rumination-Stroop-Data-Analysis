@@ -1,11 +1,13 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Set up data frames
-# NOTE: may need to remove participant 1, 7, and 46
 
 df = pd.read_csv('data.csv') # used for getting rrs and bsri scores
 # print(df['age_1'].mean()) # mean age of all participants
+# print(df['age_1'].min()) # minimum age of all participants
+# print(df['age_1'].max()) # maximum age of all participants
 
 standard_means = pd.read_csv('Standard_Emotion_Stroop.mean.csv') # means csv for each block and participants with all conditions. 
 emotion_means = pd.read_csv('Emotion_Standard_Stroop.mean.csv')
@@ -39,6 +41,12 @@ emotion_first_trait_high = emotion_first.loc[emotion_first['rrs_sums'] >=  emoti
 emotion_first_state_low =  emotion_first.loc[emotion_first['bsri_sums'] < emotion_first['bsri_sums'].median()].index
 emotion_first_state_high = emotion_first.loc[emotion_first['bsri_sums'] >= emotion_first['bsri_sums'].median()].index
 
+# check median values
+# print('standard-first rrs: ', standard_first['rrs_sums'].median())
+# print('standard-first bsri: ', standard_first['bsri_sums'].median())
+# print('emotion-first rrs: ', emotion_first['rrs_sums'].median())
+# print('emotion-first bsri: ', emotion_first['bsri_sums'].median())
+
 # means for each each condition in each block group
 standard_first_trait_low_mean  = standard_means.iloc[standard_first_trait_low].mean()
 standard_first_trait_high_mean = standard_means.iloc[standard_first_trait_high].mean()
@@ -50,7 +58,7 @@ emotion_first_trait_high_mean = emotion_means.iloc[emotion_first_trait_high].mea
 emotion_first_state_low_mean  = emotion_means.iloc[emotion_first_state_low].mean()
 emotion_first_state_high_mean = emotion_means.iloc[emotion_first_state_high].mean()
 
-# sds for each condition in each block group
+# SEMS for each condition in each block group; yeah... the labels saying sd below are inaccurate 
 standard_first_trait_low_sd = standard_means.iloc[standard_first_trait_low].sem()
 standard_first_trait_high_sd = standard_means.iloc[standard_first_trait_high].sem()
 standard_first_state_low_sd = standard_means.iloc[standard_first_state_low].sem()
@@ -76,24 +84,24 @@ sds = [standard_trait_sd, standard_state_sd, emotion_trait_sd, emotion_state_sd]
 
 block_labels = [['Standard', 'RRS'], ['Standard', 'BSRI'], ['Emotional', 'RRS'], ['Emotional', 'BSRI']]
 
-# Started with standard Stroop graph
-for block in range(len(means)):
-    mean = means[block]
-    sd = sds[block]
-    block_label = block_labels[block]
-    ax = mean.plot(x='Conditions', y = ['Low Rumination', 'High Rumination'], kind = 'bar', yerr=sd, rot = 0, color=['cornflowerblue', 'maroon'], width=0.65)
-    plt.ylim(bottom=500) # limit y-min to see differences better
-    # add bar values
-    for i, p in enumerate(ax.patches):
-        ax.annotate(str(int(p.get_height())), (p.get_x() * 1.005, p.get_height() + 43))
-    plt.ylabel('Reaction time (ms)')
-    plt.title(f'Reaction Times Starting with {block_label[0]} Stroop ({block_label[1]} groups)')
+# # Started with standard Stroop graph
+# for block in range(len(means)):
+#     mean = means[block]
+#     sd = sds[block]
+#     block_label = block_labels[block]
+#     ax = mean.plot(x='Conditions', y = ['Low Rumination', 'High Rumination'], kind = 'bar', yerr=sd, rot = 0, color=['cornflowerblue', 'maroon'], width=0.65)
+#     plt.ylim(bottom=500) # limit y-min to see differences better
+#     # add bar values
+#     for i, p in enumerate(ax.patches):
+#         ax.annotate(str(int(p.get_height())), (p.get_x() * 1.005, p.get_height() + 43))
+#     plt.ylabel('Reaction time (ms)')
+#     plt.title(f'Reaction Times Starting with {block_label[0]} Stroop ({block_label[1]} groups)')
 
-# Uncomment this line to show graphs
-# plt.show()
+# # Uncomment this line to show graphs
+# # plt.show()
 
 ###############################################################################################################
-# Checking other factors
+# Checking other factors; age and sex
 
 # checking ages of each rumination group NOTE: about the same all around. Doesn't seem to be a confounding variable
 # print(df.iloc[standard_first_trait_low]['age_1'].mean())
@@ -102,15 +110,15 @@ for block in range(len(means)):
 # print(df.iloc[emotion_first_trait_high]['age_1'].mean())
 
 # checking gender distribution of each rumination group; NOTE: might need these values later, distribution is male skewed.
-standard_first_trait_low_sex = df.iloc[standard_first_trait_low]['sex_1'];    #  print(f'total = {len(standard_first_trait_low)}'," Males: ", (standard_first_trait_low_sex == 1).sum(), 'Females: ',(standard_first_trait_low_sex == 2).sum())   
-standard_first_trait_high_sex = df.iloc[standard_first_trait_high]['sex_1'];  #  print(f'total = {len(standard_first_trait_high)}', " Males: ", (standard_first_trait_high_sex == 1).sum(), 'Females: ',(standard_first_trait_high_sex == 2).sum()) 
-standard_first_state_low_sex = df.iloc[standard_first_state_low]['sex_1'];    #  print(f'total = {len(standard_first_state_low)}', " Males: ", (standard_first_state_low_sex == 1).sum(), 'Females: ',(standard_first_state_low_sex == 2).sum()) 
-standard_first_state_high_sex = df.iloc[standard_first_state_high]['sex_1'];  #  print(f'total = {len(standard_first_state_high)}', " Males: ", (standard_first_state_high_sex == 1).sum(), 'Females: ',(standard_first_state_high_sex == 2).sum()) 
+standard_first_trait_low_sex = df.iloc[standard_first_trait_low]['sex_1'];   #   print(f'total = {len(standard_first_trait_low)}'," Males: ", (standard_first_trait_low_sex == 1).sum(), 'Females: ',(standard_first_trait_low_sex == 2).sum())   
+standard_first_trait_high_sex = df.iloc[standard_first_trait_high]['sex_1']; #   print(f'total = {len(standard_first_trait_high)}', " Males: ", (standard_first_trait_high_sex == 1).sum(), 'Females: ',(standard_first_trait_high_sex == 2).sum()) 
+standard_first_state_low_sex = df.iloc[standard_first_state_low]['sex_1'];   #   print(f'total = {len(standard_first_state_low)}', " Males: ", (standard_first_state_low_sex == 1).sum(), 'Females: ',(standard_first_state_low_sex == 2).sum()) 
+standard_first_state_high_sex = df.iloc[standard_first_state_high]['sex_1']; #   print(f'total = {len(standard_first_state_high)}', " Males: ", (standard_first_state_high_sex == 1).sum(), 'Females: ',(standard_first_state_high_sex == 2).sum()) 
 #
-emotion_first_trait_low_sex = df.iloc[ emotion_first_trait_low]['sex_1'];     # print(f'total = {len(emotion_first_trait_low)}'," Males: ", (  emotion_first_trait_low_sex == 1).sum(), 'Females: ',(emotion_first_trait_low_sex == 2).sum())  
-emotion_first_trait_high_sex = df.iloc[emotion_first_trait_high]['sex_1'];    #print(f'total = {len( emotion_first_trait_high)}', " Males: ", (emotion_first_trait_high_sex == 1).sum(), 'Females: ',(emotion_first_trait_high_sex == 2).sum()) 
-emotion_first_state_low_sex = df.iloc[ emotion_first_state_low]['sex_1'];     # print(f'total = {len(emotion_first_state_low)}', " Males: ", ( emotion_first_state_low_sex == 1).sum(), 'Females: ',(emotion_first_state_low_sex == 2).sum()) 
-emotion_first_state_high_sex = df.iloc[emotion_first_state_high]['sex_1'];    #print(f'total = {len( emotion_first_state_high)}', " Males: ", (emotion_first_state_high_sex == 1).sum(), 'Females: ',(emotion_first_state_high_sex == 2).sum()) 
+emotion_first_trait_low_sex = df.iloc[ emotion_first_trait_low]['sex_1'];    #  print(f'total = {len(emotion_first_trait_low)}'," Males: ", (  emotion_first_trait_low_sex == 1).sum(), 'Females: ',(emotion_first_trait_low_sex == 2).sum())  
+emotion_first_trait_high_sex = df.iloc[emotion_first_trait_high]['sex_1'];   # print(f'total = {len( emotion_first_trait_high)}', " Males: ", (emotion_first_trait_high_sex == 1).sum(), 'Females: ',(emotion_first_trait_high_sex == 2).sum()) 
+emotion_first_state_low_sex = df.iloc[ emotion_first_state_low]['sex_1'];    #  print(f'total = {len(emotion_first_state_low)}', " Males: ", ( emotion_first_state_low_sex == 1).sum(), 'Females: ',(emotion_first_state_low_sex == 2).sum()) 
+emotion_first_state_high_sex = df.iloc[emotion_first_state_high]['sex_1'];   # print(f'total = {len( emotion_first_state_high)}', " Males: ", (emotion_first_state_high_sex == 1).sum(), 'Females: ',(emotion_first_state_high_sex == 2).sum()) 
 
 #################################################################################
 # Separating standard Stroop trial means and emotional Stroop trial means into separate CSVs for linear mixed models
@@ -187,5 +195,43 @@ df_standard_trials = pd.DataFrame(standard_rows, columns=columns_standard)
 df_emotion_trials = pd.DataFrame(emotion_rows, columns=columns_emotion)
 
 # Convert the dataframes into csv files; uncomment these if you want to create the files. 
-df_standard_trials.to_csv('stroop_standard_trials.csv', index=False)
-df_emotion_trials.to_csv('stroop_emotion_trials.csv', index=False)
+# df_standard_trials.to_csv('stroop_standard_trials.csv', index=False)
+# df_emotion_trials.to_csv('stroop_emotion_trials.csv', index=False)
+
+######################################################################################
+# Create mean_rt based on group. Mean of all conditions together, not separate like before
+# order: trait low, trait high, state low, state high
+standard_means_labels = [standard_first_trait_low_mean, standard_first_trait_high_mean, standard_first_state_low_mean, standard_first_state_high_mean]
+emotion_means_labels = [emotion_first_trait_low_mean, emotion_first_trait_high_mean, emotion_first_state_low_mean, emotion_first_state_high_mean]   
+standard_group_means = [groupmean.mean() for groupmean in standard_means_labels]
+emotion_group_means = [groupmean.mean() for groupmean in emotion_means_labels]
+
+# get sd
+standard_sd_labels = [standard_means.iloc[standard_first_trait_low].std(), standard_means.iloc[standard_first_trait_high].std(), standard_means.iloc[standard_first_state_low].std(), standard_means.iloc[standard_first_state_high].std()]
+emotion_sd_labels = [emotion_means.iloc[emotion_first_trait_low].std(), emotion_means.iloc[emotion_first_trait_high].std(), emotion_means.iloc[emotion_first_state_low].std(), emotion_means.iloc[emotion_first_state_high].std()]
+standard_group_stds = [groupstd.std() for groupstd in standard_sd_labels]
+
+print(standard_group_stds)
+
+xlabels = ["Low", "High"]
+
+low_trait = [standard_group_means[0], emotion_group_means[0]]
+high_trait = [standard_group_means[1], emotion_group_means[1]]
+low_state = [standard_group_means[2], emotion_group_means[2]]
+high_state = [standard_group_means[3], emotion_group_means[3]]
+
+x = np.arange(2) # positions for x ticks
+width = 0.27
+
+ax = plt.subplot()
+ax.bar(x, low_trait, width)
+ax.bar(x + width, high_trait, width)
+ax.set_ylabel("Mean reaction time (ms)")
+ax.set_xticks(x + width/2) # only have 2 labels
+ax.set_xticklabels(xlabels)
+plt.show()
+
+
+
+
+# standard_trait_low_rum_mean = standard_trait_mean['Low Rumination'].mean()
