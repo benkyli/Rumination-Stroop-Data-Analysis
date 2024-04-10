@@ -25,10 +25,10 @@ standard_first = df.loc[df['psy_group'] == 1]
 emotion_first = df.loc[df['psy_group'] == 2]
 
 ########################################################################################################################
+# create graphs showing difference in reaction times for low and high ruminators across all conditions and groups
 
 # Separate groups into high and low ruminators by finding medians. Then get row indices for the groups
 # NOTE: this gets row indices, not the actual rows. Remove the .index to see row values.
-             
     # standard first and emotion first indices
         # NOTE: had to include > 0  condition because of empty RRS of participant 1 (index = 0)
 standard_first_trait_low = standard_first.loc[(standard_first['rrs_sums'] < standard_first['rrs_sums'].median()) & (standard_first['rrs_sums'] > 0)].index
@@ -98,16 +98,10 @@ for block in range(len(means)):
     plt.title(f'Reaction Times Starting with {block_label[0]} Stroop ({block_label[1]} groups)')
 
 # Uncomment this line to show graphs
-plt.show()
+# plt.show()
 
 ###############################################################################################################
-# Checking other factors; age and sex
-
-# checking ages of each rumination group NOTE: about the same all around. Doesn't seem to be a confounding variable
-# print(df.iloc[standard_first_trait_low]['age_1'].mean())
-# print(df.iloc[standard_first_trait_high]['age_1'].mean())
-# print(df.iloc[emotion_first_trait_low]['age_1'].mean())
-# print(df.iloc[emotion_first_trait_high]['age_1'].mean())
+# Checking sex breakdown
 
 # checking gender distribution of each rumination group; NOTE: might need these values later, distribution is male skewed.
 standard_first_trait_low_sex = df.iloc[standard_first_trait_low]['sex_1'];   #   print(f'total = {len(standard_first_trait_low)}'," Males: ", (standard_first_trait_low_sex == 1).sum(), 'Females: ',(standard_first_trait_low_sex == 2).sum())   
@@ -130,7 +124,8 @@ emotion_rows = []
 
 # Loop through each participant
 for index, row in df.iterrows():
-
+    # create variables for rrs_sum and counter balancing group
+    rrs_sum = row['rrs_sums']
     psy_group = row['psy_group']
     # exclude removed participants (removed participants have no psy_group value)
     if pd.isnull(psy_group):
@@ -149,6 +144,7 @@ for index, row in df.iterrows():
             # this else statement is included for the edge case of participant 1 who had no RRS data
             # all other participants with a psy_group have both rrs and bsri data
             rrs_group = 'NaN'
+            rrs_sum = 'NaN'
 
         # get bsri group
         if index in standard_first_state_low:
@@ -171,30 +167,30 @@ for index, row in df.iterrows():
             bsri_group = 1
         
     # order of row values; these will be column names later:
-    # ['psytoolkit_ID', 'prolific_ID', 'counterbalancing_group', 'congruency', 'mean_RT', 'RRS_score', 'RRS_group', 'BSRI_score', 'BSRI_group']
-        # NOTE: conditions will be standard: [congruent = 0, incongruent = 1], emotion: [negative = 0, neutral = 1, positive = 2]
+    # ['psytoolkit_ID', 'prolific_ID', 'counterbalancing_group', 'congruency', 'mean_RT', 'RRS_score', 'RRS_group', 'BSRI_score', 'BSRI_group', 'sex', 'age']
+        # NOTE: conditions for standard: [congruent = 0, incongruent = 1], emotion: [negative = 0, neutral = 1, positive = 2]
     # Loop through congruency conditions to produce 2 rows per participant
     congruencies = ['congruent', 'incongruent'] # these will be used as keys
     for idx, congruency in enumerate(congruencies):
         # NOTE: idx in this case will denote the congruency condition.
-        standard_row = [row['participant'], row['PROLIFIC_PID'], psy_group, idx, means[congruency], row['rrs_sums'], rrs_group, row['bsri_sums'], bsri_group]
+        standard_row = [row['participant'], row['PROLIFIC_PID'], psy_group, idx, means[congruency], rrs_sum, rrs_group, row['bsri_sums'], bsri_group, row['sex_1'], row['age_1']]
         standard_rows.append(standard_row)
     # Loop through valence conditions; produces 3 rows per participant
     valences = ['negative', 'neutral', 'positive']
     for idx, valence in enumerate(valences):
-        emotion_row = [row['participant'], row['PROLIFIC_PID'], psy_group, idx, means[valence], row['rrs_sums'], rrs_group, row['bsri_sums'], bsri_group]
+        emotion_row = [row['participant'], row['PROLIFIC_PID'], psy_group, idx, means[valence], rrs_sum, rrs_group, row['bsri_sums'], bsri_group, row['sex_1'], row['age_1']]
         emotion_rows.append(emotion_row)
 
 # create dataframes for exporting to csv
     # NOTE: technically, the standard and emotion trials could all be in 1 file if we assign the valences to 3, 4, 5 and make the column name 'condition'. 
     # I'll keep it separated, for organization purposes 
-columns_standard = ['psytoolkit_ID', 'prolific_ID', 'counterbalancing_group', 'congruency', 'mean_RT', 'RRS_score', 'RRS_group', 'BSRI_score', 'BSRI_group']
-columns_emotion =  ['psytoolkit_ID', 'prolific_ID', 'counterbalancing_group', 'valence', 'mean_RT', 'RRS_score', 'RRS_group', 'BSRI_score', 'BSRI_group']
+columns_standard = ['psytoolkit_ID', 'prolific_ID', 'counterbalancing_group', 'congruency', 'mean_RT', 'RRS_score', 'RRS_group', 'BSRI_score', 'BSRI_group', 'sex', 'age']
+columns_emotion =  ['psytoolkit_ID', 'prolific_ID', 'counterbalancing_group', 'valence', 'mean_RT', 'RRS_score', 'RRS_group', 'BSRI_score', 'BSRI_group', 'sex', 'age']
 
 df_standard_trials = pd.DataFrame(standard_rows, columns=columns_standard)
 df_emotion_trials = pd.DataFrame(emotion_rows, columns=columns_emotion)
 
-# Convert the dataframes into csv files; uncomment these if you want to create the files. 
+# Convert the dataframes into csv files; uncomment these lines if you want to create the files. 
 # df_standard_trials.to_csv('stroop_standard_trials.csv', index=False)
 # df_emotion_trials.to_csv('stroop_emotion_trials.csv', index=False)
 
@@ -234,7 +230,7 @@ leg.get_texts()[0].set_text('Standard-first')
 leg.get_texts()[1].set_text('Emotion-first')
 plt.ylabel('RRS mean score')
 plt.title('Mean RRS Scores based on Rumination and Counterbalancing Group')
-plt.show()
+# plt.show()
 
 # create data frame from data above to plot bsri groups
 bsri_df = pd.DataFrame()
@@ -259,4 +255,4 @@ leg.get_texts()[0].set_text('Standard-first')
 leg.get_texts()[1].set_text('Emotion-first')
 plt.ylabel('BSRI mean score')
 plt.title('Mean BSRI Scores based on Rumination and Counterbalancing Group')
-plt.show()
+# plt.show()
