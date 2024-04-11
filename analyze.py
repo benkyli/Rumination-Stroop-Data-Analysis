@@ -83,22 +83,26 @@ emotion_state_sd =  pd.concat([emotion_first_state_low_sd.rename('Low Rumination
 sds = [standard_trait_sd, standard_state_sd, emotion_trait_sd, emotion_state_sd]
 
 block_labels = [['Standard', 'RRS'], ['Standard', 'BSRI'], ['Emotional', 'RRS'], ['Emotional', 'BSRI']]
+ns = [[22, 23], [23, 23], [19, 20], [19, 20] ] # participants for low and high groups respectively
 
-# Uncomment this block to show rt graphs per condition
 # Started with standard Stroop graph
-# for block in range(len(means)):
-#     mean = means[block]
-#     sd = sds[block]
-#     block_label = block_labels[block]
-#     ax = mean.plot(x='Conditions', y = ['Low Rumination', 'High Rumination'], kind = 'bar', yerr=sd, rot = 0, color=['cornflowerblue', 'maroon'], width=0.65)
-#     plt.ylim(bottom=500) # limit y-min to see differences better
-#     # add bar values
-#     for i, p in enumerate(ax.patches):
-#         ax.annotate(str(int(p.get_height())), (p.get_x() * 1.005, p.get_height() + 43))
-#     plt.ylabel('Reaction time (ms)')
-#     plt.title(f'Reaction Times Starting with {block_label[0]} Stroop ({block_label[1]} groups)')
+# Uncomment this block to show rt graphs per condition
+for block in range(len(means)):
+    mean = means[block]
+    sd = sds[block]
+    block_label = block_labels[block]
+    ax = mean.plot(x='Conditions', y = ['Low Rumination', 'High Rumination'], kind = 'bar', yerr=sd, rot = 0, color=['cornflowerblue', 'maroon'], width=0.65)
+    leg = ax.legend()
+    leg.get_texts()[0].set_text(f'Low Rumination (n={ns[block][0]})')
+    leg.get_texts()[1].set_text(f'High Rumination (n={ns[block][1]})')
+    plt.ylim(bottom=500) # limit y-min to see differences better
+    # add bar values
+    for i, p in enumerate(ax.patches):
+        ax.annotate(str(int(p.get_height())), (p.get_x() * 1.005, p.get_height() + 43))
+    plt.ylabel('Average Reaction Time (ms)')
+    plt.title(f'Reaction Times Starting with {block_label[0]} Stroop ({block_label[1]} groups)')
 
-# plt.show()
+plt.show()
 
 ###############################################################################################################
 # Checking sex breakdown
@@ -230,7 +234,7 @@ leg.get_texts()[0].set_text('Standard-first')
 leg.get_texts()[1].set_text('Emotion-first')
 plt.ylabel('RRS mean score')
 plt.title('Mean RRS Scores based on Rumination and Counterbalancing Group')
-plt.show()
+# plt.show()
 
 # create data frame from data above to plot bsri groups
 bsri_df = pd.DataFrame()
@@ -255,4 +259,4 @@ leg.get_texts()[0].set_text('Standard-first')
 leg.get_texts()[1].set_text('Emotion-first')
 plt.ylabel('BSRI mean score')
 plt.title('Mean BSRI Scores based on Rumination and Counterbalancing Group')
-plt.show()
+# plt.show()
