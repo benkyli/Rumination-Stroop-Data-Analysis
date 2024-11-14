@@ -1,6 +1,6 @@
 # Data Analysis of the Impacts of Emotional Processing and Rumination on the Emotional Stroop task
 
-#### This repository contains the data analysis done for my thesis on the effects of emotional processing and rumination on the Stroop task. The experiment was hosted on PsyToolKit, and the data files were generated from the experiment.
+#### This repository contains the data analysis done for my thesis on the effects of emotional processing and rumination on the Stroop task. The experiment was hosted on PsyToolKit and participants were recruited through Prolific.
 
 ## Data Files
 #### *data.csv* contains the scores for the rumination surveys and other important participant data.
