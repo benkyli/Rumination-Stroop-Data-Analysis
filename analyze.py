@@ -26,61 +26,65 @@ emotion_first = df.loc[df['psy_group'] == 2]
 ########################################################################################################################
 # create graphs showing difference in reaction times for low and high ruminators across all conditions and groups
 
+standard_labels = ['standard_first_trait_low', 'standard_first_trait_high', 'standard_first_state_low', 'standard_first_state_high']
+emotion_labels = ['emotion_first_trait_low', 'emotion_first_trait_high', 'emotion_first_state_low', 'emotion_first_state_high']
+
 # Separate groups into high and low ruminators by finding medians. Then get row indices for the groups
 # NOTE: this only gets row indices; remove the .index to see row values.
 # NOTE: had to include > 0  condition because a participant had a missing rrs submission
-standard_first_trait_low = standard_first.loc[(standard_first['rrs_sums'] < standard_first['rrs_sums'].median()) & (standard_first['rrs_sums'] > 0)].index
-standard_first_trait_high = standard_first.loc[(standard_first['rrs_sums'] > standard_first['rrs_sums'].median()) & (standard_first['rrs_sums'] > 0)].index
-standard_first_state_low = standard_first.loc[standard_first['bsri_sums'] < standard_first['bsri_sums'].median()].index
-standard_first_state_high = standard_first.loc[standard_first['bsri_sums'] > standard_first['bsri_sums'].median()].index
+standard_first_trait_low_idx = standard_first.loc[(standard_first['rrs_sums'] < standard_first['rrs_sums'].median()) & (standard_first['rrs_sums'] > 0)].index
+standard_first_trait_high_idx = standard_first.loc[(standard_first['rrs_sums'] > standard_first['rrs_sums'].median()) & (standard_first['rrs_sums'] > 0)].index
+standard_first_state_low_idx = standard_first.loc[standard_first['bsri_sums'] < standard_first['bsri_sums'].median()].index
+standard_first_state_high_idx = standard_first.loc[standard_first['bsri_sums'] > standard_first['bsri_sums'].median()].index
 
-emotion_first_trait_low =  emotion_first.loc[emotion_first['rrs_sums'] <  emotion_first['rrs_sums'].median()].index
-emotion_first_trait_high = emotion_first.loc[emotion_first['rrs_sums'] >=  emotion_first['rrs_sums'].median()].index
-emotion_first_state_low =  emotion_first.loc[emotion_first['bsri_sums'] < emotion_first['bsri_sums'].median()].index
-emotion_first_state_high = emotion_first.loc[emotion_first['bsri_sums'] >= emotion_first['bsri_sums'].median()].index
+emotion_first_trait_low_idx =  emotion_first.loc[emotion_first['rrs_sums'] <  emotion_first['rrs_sums'].median()].index
+emotion_first_trait_high_idx = emotion_first.loc[emotion_first['rrs_sums'] >=  emotion_first['rrs_sums'].median()].index
+emotion_first_state_low_idx =  emotion_first.loc[emotion_first['bsri_sums'] < emotion_first['bsri_sums'].median()].index
+emotion_first_state_high_idx = emotion_first.loc[emotion_first['bsri_sums'] >= emotion_first['bsri_sums'].median()].index
 
-# means for each each condition in each block group
-standard_first_trait_low_mean  = standard_means.iloc[standard_first_trait_low].mean()
-standard_first_trait_high_mean = standard_means.iloc[standard_first_trait_high].mean()
-standard_first_state_low_mean  = standard_means.iloc[standard_first_state_low].mean()
-standard_first_state_high_mean = standard_means.iloc[standard_first_state_high].mean()
+standard_idx = [standard_first_trait_low_idx, standard_first_trait_high_idx, standard_first_state_low_idx, standard_first_state_high_idx]
+emotion_idx = [emotion_first_trait_low_idx, emotion_first_trait_high_idx, emotion_first_state_low_idx, emotion_first_state_high_idx]
 
-emotion_first_trait_low_mean  = emotion_means.iloc[emotion_first_trait_low].mean()
-emotion_first_trait_high_mean = emotion_means.iloc[emotion_first_trait_high].mean()
-emotion_first_state_low_mean  = emotion_means.iloc[emotion_first_state_low].mean()
-emotion_first_state_high_mean = emotion_means.iloc[emotion_first_state_high].mean()
+# means and standard errors of the means for each each condition in each block group
 
-# SEMS for each condition in each block group; yeah... the labels saying sem below are inaccurate 
-standard_first_trait_low_sem = standard_means.iloc[standard_first_trait_low].sem()
-standard_first_trait_high_sem = standard_means.iloc[standard_first_trait_high].sem()
-standard_first_state_low_sem = standard_means.iloc[standard_first_state_low].sem()
-standard_first_state_high_sem = standard_means.iloc[standard_first_state_high].sem()
+# NOTE: the loop below will be using values from the labels lists and the index lists. These assume that the length of all these lists are the same.
+means = {}
+sems = {}
 
-emotion_first_trait_low_sem =  emotion_means.iloc[emotion_first_trait_low].sem()
-emotion_first_trait_high_sem = emotion_means.iloc[emotion_first_trait_high].sem()
-emotion_first_state_low_sem =  emotion_means.iloc[emotion_first_state_low].sem()
-emotion_first_state_high_sem = emotion_means.iloc[emotion_first_state_high].sem()
+for i in range(len(standard_labels)):
+    means[standard_labels[i]] = standard_means.iloc[standard_idx[i]].mean()
+    means[emotion_labels[i]] = emotion_means.iloc[emotion_idx[i]].mean()
 
-# Convert means and sems into dataframes
-standard_trait_mean = pd.DataFrame({'Conditions': standard_first_trait_high_mean.index, 'Low Rumination': standard_first_trait_low_mean.values,'High Rumination': standard_first_trait_high_mean.values})
-standard_state_mean = pd.DataFrame({'Conditions': standard_first_state_high_mean.index, 'Low Rumination': standard_first_state_low_mean.values,'High Rumination': standard_first_state_high_mean.values})
-emotion_trait_mean = pd.DataFrame({'Conditions': emotion_first_trait_high_mean.index, 'Low Rumination': emotion_first_trait_low_mean.values,'High Rumination': emotion_first_trait_high_mean.values})
-emotion_state_mean = pd.DataFrame({'Conditions': emotion_first_state_high_mean.index, 'Low Rumination': emotion_first_state_low_mean.values,'High Rumination': emotion_first_state_high_mean.values})
-means = [standard_trait_mean, standard_state_mean, emotion_trait_mean, emotion_state_mean]
+    sems[standard_labels[i]] = standard_means.iloc[standard_idx[i]].sem()
+    sems[emotion_labels[i]] = emotion_means.iloc[emotion_idx[i]].sem()
 
-standard_trait_sem = pd.concat([standard_first_trait_low_sem.rename('Low Rumination'), standard_first_trait_high_sem.rename('High Rumination')], axis=1)
-standard_state_sem = pd.concat([standard_first_state_low_sem.rename('Low Rumination'), standard_first_state_high_sem.rename('High Rumination')], axis=1)
-emotion_trait_sem =  pd.concat([emotion_first_trait_low_sem.rename('Low Rumination'), emotion_first_trait_high_sem.rename('High Rumination')], axis=1)
-emotion_state_sem =  pd.concat([emotion_first_state_low_sem.rename('Low Rumination'), emotion_first_state_high_sem.rename('High Rumination')], axis=1)
-sems = [standard_trait_sem, standard_state_sem, emotion_trait_sem, emotion_state_sem]
 
+# combine means and sems from each rumination group into their own data frame based on counter balance condition 
+standard_means_labels = ['standard_trait_mean', 'standard_state_mean'] 
+emotion_means_labels = ['emotion_trait_mean', 'emotion_state_mean']
+standard_sems_labels = ['standard_trait_sem', 'standard_state_sem']
+emotion_sems_labels = ['emotion_trait_sem', 'emotion_state_sem']
+combined_means = {}
+combined_sems = {}
+# NOTE: this implementation assumes that the rumination groups are divided evenly (into low vs high for each counterbalancing condition and state or trait)
+# NOTE: the index (i) is combining low and high rumination groups into a single dataframe. The i * 2 is used to retrieve the original labels, which were ordered in low-high pairs based on rumination type (trait then state)
+for i in range(len(standard_means_labels)):         
+    combined_means[standard_means_labels[i]] = pd.DataFrame({'Conditions': means[standard_labels[i * 2]].index, 'Low Rumination': means[standard_labels[i * 2]].values,'High Rumination': means[standard_labels[i * 2 + 1]].values})
+    combined_means[emotion_means_labels[i]] = pd.DataFrame({'Conditions': means[emotion_labels[i * 2]].index, 'Low Rumination': means[emotion_labels[i * 2]].values,'High Rumination': means[emotion_labels[i * 2 + 1]].values})
+
+    combined_sems[standard_sems_labels[i]] = pd.concat([sems[standard_labels[i * 2]].rename('Low Rumination'), sems[standard_labels[i * 2 + 1]].rename('High Rumination')], axis=1)
+    combined_sems[emotion_sems_labels[i]] = pd.concat([sems[emotion_labels[i * 2]].rename('Low Rumination'), sems[emotion_labels[i * 2 + 1]].rename('High Rumination')], axis=1)
+
+# prepare labels for graphing
+means_labels = standard_means_labels + emotion_means_labels
+sems_labels = standard_sems_labels + emotion_sems_labels
 block_labels = [['Standard', 'RRS'], ['Standard', 'BSRI'], ['Emotional', 'RRS'], ['Emotional', 'BSRI']]
 ns = [[22, 23], [23, 23], [19, 20], [19, 20] ] # participants for low and high groups respectively
 
 # graph the react times per Stroop condition
-for block in range(len(means)):
-    mean = means[block]
-    sem = sems[block]
+for block in range(len(means_labels)):
+    mean = combined_means[means_labels[block]]
+    sem = combined_sems[sems_labels[block]]
     block_label = block_labels[block]
     ax = mean.plot(x='Conditions', y = ['Low Rumination', 'High Rumination'], kind = 'bar', yerr=sem, rot = 0, color=['cornflowerblue', 'maroon'], width=0.65)
     leg = ax.legend()
@@ -106,26 +110,26 @@ for block in range(len(means)):
 # Checking distribution of sexes in each condition; uncomment the print statements to see
 
 # checking gender distribution of each rumination group; NOTE: might need these values later, distribution is male skewed.
-standard_first_trait_low_sex = df.iloc[standard_first_trait_low]['sex_1'];   #   print(f'total = {len(standard_first_trait_low)}'," Males: ", (standard_first_trait_low_sex == 1).sum(), 'Females: ',(standard_first_trait_low_sex == 2).sum())   
-standard_first_trait_high_sex = df.iloc[standard_first_trait_high]['sex_1']; #   print(f'total = {len(standard_first_trait_high)}', " Males: ", (standard_first_trait_high_sex == 1).sum(), 'Females: ',(standard_first_trait_high_sex == 2).sum()) 
-standard_first_state_low_sex = df.iloc[standard_first_state_low]['sex_1'];   #   print(f'total = {len(standard_first_state_low)}', " Males: ", (standard_first_state_low_sex == 1).sum(), 'Females: ',(standard_first_state_low_sex == 2).sum()) 
-standard_first_state_high_sex = df.iloc[standard_first_state_high]['sex_1']; #   print(f'total = {len(standard_first_state_high)}', " Males: ", (standard_first_state_high_sex == 1).sum(), 'Females: ',(standard_first_state_high_sex == 2).sum()) 
+standard_first_trait_low_sex = df.iloc[standard_first_trait_low_idx]['sex_1'];   #   print(f'total = {len(standard_first_trait_low_idx)}'," Males: ", (standard_first_trait_low_sex == 1).sum(), 'Females: ',(standard_first_trait_low_sex == 2).sum())   
+standard_first_trait_high_sex = df.iloc[standard_first_trait_high_idx]['sex_1']; #   print(f'total = {len(standard_first_trait_high_idx)}', " Males: ", (standard_first_trait_high_sex == 1).sum(), 'Females: ',(standard_first_trait_high_sex == 2).sum()) 
+standard_first_state_low_sex = df.iloc[standard_first_state_low_idx]['sex_1'];   #   print(f'total = {len(standard_first_state_low_idx)}', " Males: ", (standard_first_state_low_sex == 1).sum(), 'Females: ',(standard_first_state_low_sex == 2).sum()) 
+standard_first_state_high_sex = df.iloc[standard_first_state_high_idx]['sex_1']; #   print(f'total = {len(standard_first_state_high_idx)}', " Males: ", (standard_first_state_high_sex == 1).sum(), 'Females: ',(standard_first_state_high_sex == 2).sum()) 
 #
-emotion_first_trait_low_sex = df.iloc[ emotion_first_trait_low]['sex_1'];    #  print(f'total = {len(emotion_first_trait_low)}'," Males: ", (  emotion_first_trait_low_sex == 1).sum(), 'Females: ',(emotion_first_trait_low_sex == 2).sum())  
-emotion_first_trait_high_sex = df.iloc[emotion_first_trait_high]['sex_1'];   # print(f'total = {len( emotion_first_trait_high)}', " Males: ", (emotion_first_trait_high_sex == 1).sum(), 'Females: ',(emotion_first_trait_high_sex == 2).sum()) 
-emotion_first_state_low_sex = df.iloc[ emotion_first_state_low]['sex_1'];    #  print(f'total = {len(emotion_first_state_low)}', " Males: ", ( emotion_first_state_low_sex == 1).sum(), 'Females: ',(emotion_first_state_low_sex == 2).sum()) 
-emotion_first_state_high_sex = df.iloc[emotion_first_state_high]['sex_1'];   # print(f'total = {len( emotion_first_state_high)}', " Males: ", (emotion_first_state_high_sex == 1).sum(), 'Females: ',(emotion_first_state_high_sex == 2).sum()) 
+emotion_first_trait_low_sex = df.iloc[ emotion_first_trait_low_idx]['sex_1'];    #  print(f'total = {len(emotion_first_trait_low_idx)}'," Males: ", (  emotion_first_trait_low_sex == 1).sum(), 'Females: ',(emotion_first_trait_low_sex == 2).sum())  
+emotion_first_trait_high_sex = df.iloc[emotion_first_trait_high_idx]['sex_1'];   # print(f'total = {len( emotion_first_trait_high_idx)}', " Males: ", (emotion_first_trait_high_sex == 1).sum(), 'Females: ',(emotion_first_trait_high_sex == 2).sum()) 
+emotion_first_state_low_sex = df.iloc[ emotion_first_state_low_idx]['sex_1'];    #  print(f'total = {len(emotion_first_state_low_idx)}', " Males: ", ( emotion_first_state_low_sex == 1).sum(), 'Females: ',(emotion_first_state_low_sex == 2).sum()) 
+emotion_first_state_high_sex = df.iloc[emotion_first_state_high_idx]['sex_1'];   # print(f'total = {len( emotion_first_state_high_idx)}', " Males: ", (emotion_first_state_high_sex == 1).sum(), 'Females: ',(emotion_first_state_high_sex == 2).sum()) 
 
 ######################################################################################
 # Create graphs of the mean rumination scores per counterbalancing group.
 # order = standard low, standard high, emotion low, emotion high
 
 # rrs groups
-rrs_group_labels = [standard_first_trait_low, standard_first_trait_high, emotion_first_trait_low, emotion_first_trait_high]
+rrs_group_labels = [standard_first_trait_low_idx, standard_first_trait_high_idx, emotion_first_trait_low_idx, emotion_first_trait_high_idx]
 rrs_group_means = [df.iloc[group]['rrs_sums'].mean() for group in rrs_group_labels]
 rrs_group_stds = [df.iloc[group]['rrs_sums'].std() for group in rrs_group_labels]
 # bsri groups
-bsri_group_labels = [standard_first_state_low, standard_first_state_high, emotion_first_state_low, emotion_first_state_high]
+bsri_group_labels = [standard_first_state_low_idx, standard_first_state_high_idx, emotion_first_state_low_idx, emotion_first_state_high_idx]
 bsri_group_means = [df.iloc[group]['bsri_sums'].mean() for group in bsri_group_labels]
 bsri_group_stds = [df.iloc[group]['bsri_sums'].std() for group in bsri_group_labels]
 
@@ -189,21 +193,23 @@ emotion_rows = []
 
 # Loop through each participant
 for index, row in df.iterrows():
-    # create variables for rrs_sum and counter balancing group
-    rrs_sum = row['rrs_sums']
-    psy_group = row['psy_group']
+
     # exclude removed participants (removed participants with no psy_group value)
     if pd.isnull(psy_group):
         continue # go to next row
+
+    # create variables for rrs_sum and counter balancing group
+    rrs_sum = row['rrs_sums']
+    psy_group = row['psy_group']
 
     # get means and rumination groups based on counterbalancing group
     # psy group 1 is standard-first group
     if psy_group == 1:
         means = standard_means.iloc[index] # get means row using index
         # get rrs group
-        if index in standard_first_trait_low:
+        if index in standard_first_trait_low_idx:
             rrs_group = 0
-        elif index in standard_first_trait_high:
+        elif index in standard_first_trait_high_idx:
             rrs_group = 1
         else:
             # this else statement is included for the edge case of participants who had no RRS data
@@ -212,7 +218,7 @@ for index, row in df.iterrows():
             rrs_sum = 'NaN'
 
         # get bsri group
-        if index in standard_first_state_low:
+        if index in standard_first_state_low_idx:
             bsri_group = 0
         else:
             bsri_group = 1
@@ -221,12 +227,12 @@ for index, row in df.iterrows():
     else:
         means = emotion_means.iloc[index]
         # rrs group
-        if index in emotion_first_trait_low:
+        if index in emotion_first_trait_low_idx:
             rrs_group = 0
         else:
             rrs_group = 1
         # bsri group
-        if index in emotion_first_state_low:
+        if index in emotion_first_state_low_idx:
             bsri_group = 0
         else:
             bsri_group = 1

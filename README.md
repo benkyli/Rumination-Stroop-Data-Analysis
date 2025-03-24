@@ -12,6 +12,6 @@
 ##### *analyze.py* created graphs of the data and created the files *stroop_emotion_trials.csv* and *stroop_standard_trials.csv*. These files were used to create mixed linear models using the file *stroopanalysis.R*
 
 ## Data Representation
-#### The graphs in the *graphs* folder show the rumination scores of each condition group and the average Stroop times for each counterbalancing condition.
+##### The graphs in the *graphs* folder show the rumination scores of each condition group and the average Stroop times for each counterbalancing condition.
 
 ##### The *Regression Tables* folder contains mixed linear models of the data.
