@@ -26,6 +26,7 @@ emotion_first = df.loc[df['psy_group'] == 2]
 ########################################################################################################################
 # create graphs showing difference in reaction times for low and high ruminators across all conditions and groups
 
+# create lablels for each rumination group. Standard refers to the counterbalancing group that started with standard Stroop. Emotion is the group that started with emotional Stroop.
 standard_labels = ['standard_first_trait_low', 'standard_first_trait_high', 'standard_first_state_low', 'standard_first_state_high']
 emotion_labels = ['emotion_first_trait_low', 'emotion_first_trait_high', 'emotion_first_state_low', 'emotion_first_state_high']
 
@@ -46,7 +47,6 @@ standard_idx = [standard_first_trait_low_idx, standard_first_trait_high_idx, sta
 emotion_idx = [emotion_first_trait_low_idx, emotion_first_trait_high_idx, emotion_first_state_low_idx, emotion_first_state_high_idx]
 
 # means and standard errors of the means for each each condition in each block group
-
 # NOTE: the loop below will be using values from the labels lists and the index lists. These assume that the length of all these lists are the same.
 means = {}
 sems = {}
